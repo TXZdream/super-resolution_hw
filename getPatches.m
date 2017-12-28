@@ -42,8 +42,8 @@ for m=1:length(imgDir)
     folder_position = fullfile(sprintf('%s/data/position/', pwd));
     folder_feature = fullfile(sprintf('%s/data/feature/', pwd));
     [filepath, name, ext] = fileparts(imgDir(m).name);
-    fn_position_full = fullfile(folder_position, sprintf('%s_position.mat', name));
-    fn_feature_full = fullfile(folder_feature, sprintf('%s_feature.mat', name));
+    fn_position_full = fullfile(folder_position, sprintf('%s.mat', name));
+    fn_feature_full = fullfile(folder_feature, sprintf('%s.mat', name));
 
     fid = fopen(fn_position_full, 'w');
     fclose(fid);

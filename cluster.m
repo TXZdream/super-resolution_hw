@@ -28,7 +28,7 @@ else
 end
 % Kmeans
 tic
-[IDX C] = kmeans(train, clusterNum, 'MaxIter', times, 'Display','iter');
+[IDX, C] = kmeans(train, clusterNum, 'MaxIter', times, 'Display', 'iter');
 toc
 % Sort and save center data
 [IDX, index] = sort(hist(IDX, clusterNum), 'descend');
