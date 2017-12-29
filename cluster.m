@@ -1,7 +1,7 @@
 clear
 % Predefined values
 clusterNum = 512;
-times = 100;
+times = 500;
 featureNum = 200000;
 % Read if data exists
 if ~exist(fullfile('data', 'feature.mat'), 'file')

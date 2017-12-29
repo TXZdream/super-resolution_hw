@@ -8,6 +8,7 @@ imgDir = dir([imgPath '*.jpg']);
 window = gaussian(11, 1.7);
 
 for m=1:length(imgDir)
+    fprintf('The %dth image\n', m);
     img = imread([imgPath imgDir(m).name]);
     img = rgb2ycbcr(img);
     img = double(img(:, :, 1));
@@ -50,7 +51,6 @@ for m=1:length(imgDir)
     fid = fopen(fn_feature_full, 'w');
     fclose(fid);
 
-    fprintf()
     save(fn_position_full, 'centers');
     save(fn_feature_full, 'features');
 end
