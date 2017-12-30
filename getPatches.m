@@ -10,8 +10,8 @@ window = gaussian(11, 1.7);
 for m=1:length(imgDir)
     fprintf('The %dth image\n', m);
     img = imread([imgPath imgDir(m).name]);
-    img = rgb2ycbcr(img);
-    img = double(img(:, :, 1));
+    img = double(rgb2ycbcr(img));
+    img = img(:, :, 1);
 
     % Get low resolution image
     blurImg = myfilter(img, window);
@@ -22,7 +22,7 @@ for m=1:length(imgDir)
 
     row = row / 3;
     col = col / 3;
-    lrImg = bicubic(blurImg, row, col);
+    lrImg = double(bicubic(blurImg, row, col));
 
     % Get image feature
     num = (row - patchsize + 1) * (col - patchsize + 1);

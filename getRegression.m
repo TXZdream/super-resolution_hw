@@ -28,7 +28,7 @@ for m=1:clusterNum
         feature = feature.features;
         % Get raw image
         [~, name, ~] = fileparts(imgDir(a).name);
-        HRImage = double(imread(fullfile('train', sprintf('%s.jpg', name))));
+        HRImage = double(rgb2ycbcr(imread(fullfile('train', sprintf('%s.jpg', name)))))(:, :, 1);
         % Get patches which belong to current cluster
         match = (pointCluster == m);
         if nnz(match) <= 0
@@ -40,13 +40,8 @@ for m=1:clusterNum
         wantedLRPosition = center(:, match);
         for b=1:length(match)
             LRPoint = wantedLRPosition(:, b);
-            % Get four points in HR image with scale 3
-            LU = [3*(LRPoint(1)-1)-2 3*(LRPoint(2)-1)-2];
-            LD = [3*(LRPoint(1)+1) 3*(LRPoint(2)-1)-2];
-            RU = [3*(LRPoint(1)-1)-2 3*(LRPoint(2)+1)];
-            RD = [3*(LRPoint(1)+1) 3*(LRPoint(2)+1)];
             % Get HR patch
-            HRPatch = HRImage(LU:LD, RU:RD);
+            HRPatch = HRImage(3*(LRPoint(1)-1)-2:3*(LRPoint(1)+1), 3*(LRPoint(2)-1)-2:3*(LRPoint(2)+1));
             % Calculate HR feature
             HRFeature = reshape(HRPatch, [HRSize .^ 2, 1]) - (sum(sum(wantedLRFeature(:, b))) / 45);
             wantedHRFeature = [wantedHRFeature HRFeature];
