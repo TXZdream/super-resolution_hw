@@ -5,6 +5,35 @@ imgDir = dir([imgPath '*.mat']);
 testNum = 2000;
 HRSize = 9;
 coff = [];
+
+% Read all data to memory
+nameList = [];
+features = cell(length(imgDir), 1);
+centers = cell(length(imgDir), 1);
+pClusters = cell(length(imgDir), 1);
+images = cell(length(imgDir), 1);
+for a=1:length(imgDir)
+    [~, name, ~] = fileparts(imgDir(a).name);
+    nameList = [nameList name];
+    % Get all center in this file
+    center = load(fullfile('data/position', imgDir(a).name), 'centers');
+    center = center.centers;
+    centers{a} = center;
+    % Get all features
+    feature = load(fullfile('data/feature', imgDir(a).name), 'features');
+    feature = feature.features;
+    features{a} = feature;
+    % Get all cluster
+    pointCluster = load(fullfile('data/nearest', imgDir(a).name), 'minCluster');
+    pointCluster = pointCluster.minCluster;
+    pClusters{a} = pointCluster;
+    % Get raw image
+    HRImage = double(rgb2ycbcr(imread(fullfile('train', sprintf('%s.jpg', name)))));
+    HRImage = HRImage(:, :, 1);
+    images{a} = HRImage;
+end
+fprintf('Finish reading all data.\n');
+
 % Get every patch in each cluster
 for m=1:clusterNum
 % for m=229:229
@@ -16,32 +45,19 @@ for m=1:clusterNum
         if (size(wantedLRFeature, 2) >= testNum)
             break;
         end
-        fprintf('    Reading the %dth file...\n', a);
-        % Get all center in this file
-        center = load(fullfile('data/position', imgDir(a).name), 'centers');
-        center = center.centers;
-        % Get all cluster
-        pointCluster = load(fullfile('data/nearest', imgDir(a).name), 'minCluster');
-        pointCluster = pointCluster.minCluster;
-        % Get all features
-        feature = load(fullfile('data/feature', imgDir(a).name), 'features');
-        feature = feature.features;
-        % Get raw image
-        [~, name, ~] = fileparts(imgDir(a).name);
-        HRImage = double(rgb2ycbcr(imread(fullfile('train', sprintf('%s.jpg', name)))))(:, :, 1);
         % Get patches which belong to current cluster
-        match = (pointCluster == m);
+        match = (pClusters{a} == m);
         if nnz(match) <= 0
             continue;
         end
         match = find(match);
         % Get wanted LR and HR features
-        wantedLRFeature = [wantedLRFeature feature(:, match)];
-        wantedLRPosition = center(:, match);
+        wantedLRFeature = [wantedLRFeature features{a}(:, match)];
+        wantedLRPosition = centers{a}(:, match);
         for b=1:length(match)
             LRPoint = wantedLRPosition(:, b);
             % Get HR patch
-            HRPatch = HRImage(3*(LRPoint(1)-1)-2:3*(LRPoint(1)+1), 3*(LRPoint(2)-1)-2:3*(LRPoint(2)+1));
+            HRPatch = images{a}(3*(LRPoint(1)-1)-2:3*(LRPoint(1)+1), 3*(LRPoint(2)-1)-2:3*(LRPoint(2)+1));
             % Calculate HR feature
             HRFeature = reshape(HRPatch, [HRSize .^ 2, 1]) - (sum(sum(wantedLRFeature(:, b))) / 45);
             wantedHRFeature = [wantedHRFeature HRFeature];

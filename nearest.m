@@ -15,7 +15,7 @@ for m=1:length(imgDir)
     [row col] = size(data);
     for n=1:col
         V = repmat(data(:, n)', 512, 1) - center;
-        ret = sum(abs(V), 2);
+        ret = sum(V .^ 2, 2);
         [~, index] = min(ret);
         minCluster(n) = index;
     end
