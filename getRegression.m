@@ -3,6 +3,7 @@ clusterNum = 512;
 imgPath = 'data/position/';
 imgDir = dir([imgPath '*.mat']);
 testNum = 2000;
+HRSize = 9;
 % Get every patch in each cluster
 for m=1:clusterNum
     wantedLRFeature = [];
@@ -37,21 +38,21 @@ for m=1:clusterNum
         for b=1:length(match)
             LRPoint = wantedLRPosition(:, b);
             % Get four points in HR image with scale 3
-            LU = [3*(LRPoint(1)-2)-1 3*(LRPoint(2)-2)-1];
-            LD = [3*(LRPoint(1)+1)+1 3*(LRPoint(2)-2)-1];
-            RU = [3*(LRPoint(1)-2)-1 3*(LRPoint(2)+1)+1];
-            RD = [3*(LRPoint(1)+1)+1 3*(LRPoint(2)+1)+1];
+            LU = [3*(LRPoint(1)-1)-2 3*(LRPoint(2)-1)-2];
+            LD = [3*(LRPoint(1)+1) 3*(LRPoint(2)-1)-2];
+            RU = [3*(LRPoint(1)-1)-2 3*(LRPoint(2)+1)];
+            RD = [3*(LRPoint(1)+1) 3*(LRPoint(2)+1)];
             % Get HR patch
             HRPatch = HRImage(LU:LD, RU:RD);
             % Calculate HR feature
-            HRFeature = reshape(HRPatch, [144, 1]) - (sum(sum(wantedLRFeature(:, b))) / 45);
+            HRFeature = reshape(HRPatch, [HRSize .^ 2, 1]) - (sum(sum(wantedLRFeature(:, b))) / 45);
             wantedHRFeature = [wantedHRFeature HRFeature];
         end
     end
     % Calculate value of regression coefficient
     wantedLRFeature = [wantedLRFeature; ones(1, size(wantedLRFeature, 2))];
-    regre = cell(1, 144);
-    for a=1:144
+    regre = cell(1, HRSize .^ 2);
+    for a=1:HRSize .^ 2
         tmp = wantedHRFeature(a, :);
         tmp = wantedLRFeature' \ tmp';
         regre{a} = tmp;
