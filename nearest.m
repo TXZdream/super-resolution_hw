@@ -7,6 +7,8 @@ center = center.C;
 imgPath = 'data/feature/';
 imgDir = dir([imgPath '*.mat']);
 for m=1:length(imgDir)
+% for m=302:302
+    minCluster = [];
     fprintf('Processing the %dth data...\n', m);
     data = load(fullfile(imgPath, imgDir(m).name), 'features');
     data = data.features;

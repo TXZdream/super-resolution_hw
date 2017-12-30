@@ -11,7 +11,7 @@ function output = SSIM(inputImg1, inputImg2)
     inputImg1 = double(inputImg1(:, :, 1));
     inputImg2 = double(inputImg2(:, :, 1));
     [row col tmp] = size(inputImg1);
-    window = gaussian(7, 1.5);
+    window = gaussian(11, 1.5);
     window = window / sum(sum(window));
     % Filter with gaussian to get required value
     miux = myfilter(inputImg1, window);
