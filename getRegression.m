@@ -1,5 +1,5 @@
 % Predefined values
-clusterNum = 512;
+clusterNum = 1024;
 imgPath = 'data/position/';
 imgDir = dir([imgPath '*.mat']);
 testNum = 2000;
@@ -36,12 +36,10 @@ fprintf('Finish reading all data.\n');
 
 % Get every patch in each cluster
 for m=1:clusterNum
-% for m=229:229
     wantedLRFeature = [];
     wantedHRFeature = [];
     fprintf('Calculate the %dth cluster...\n', m);
     for a=1:length(imgDir)
-    % for a = 302:302
         if (size(wantedLRFeature, 2) >= testNum)
             break;
         end

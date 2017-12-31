@@ -15,7 +15,7 @@ for m=1:length(imgDir)
     imwrite(large, strcat('target/large/', imgDir(m).name));
 
     % Get PSNR value
-    % PSNR(img, large)
-    SSIM(img, large) * 100
-    ssim2(img, large) * 100
+    PSNR(img, large)
+    SSIM(img, large)
+    % ssim2(img, large) * 100
 end

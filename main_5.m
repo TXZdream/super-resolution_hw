@@ -5,12 +5,18 @@
 patchSize = 7;
 imgPath = 'image/';
 imgDir = dir([imgPath '*.bmp']);
+% clusterNum = 512;
+clusterNum = 512;
 % Load regression coff
 coff = load(fullfile('data', 'regression.mat'), 'coff');
 coff = coff.coff;
-% Load cluster
+% coff = load(fullfile('data', 'coef_matirxs14.mat'), 'coef_matirxs');
+% coff = coff.coef_matirxs;
+% Load cluster center
 Cluster = load(fullfile('data', 'center.mat'), 'C');
 Cluster = Cluster.C;
+% Cluster = load(fullfile('data', 'c.mat'), 'C');
+% Cluster = Cluster.C;
 % Handle all image
 for m=1:length(imgDir)
     img = imread([imgPath imgDir(m).name]);
@@ -27,7 +33,7 @@ for m=1:length(imgDir)
     large = zeros(height, width);
     times = zeros(height, width);
     ret = zeros(height, width, 3);
-    % Get patch
+    % Get HR patch
     for a=1:floor(height / 3)
         for b=1:floor(width / 3)
             patch = zeros(patchSize, patchSize);
@@ -40,14 +46,18 @@ for m=1:length(imgDir)
             end
             patch = patch([2:6 8:42 44:48]);
             patch = reshape(patch, [patchSize .^ 2 - 4, 1]) - sum(sum(patch)) / (patchSize .^ 2 - 4);
+            % patch = reshape(patch, [patchSize .^ 2 - 4, 1]);
             % Judge which cluster
-            judge = repmat(patch', [512 1]) - Cluster;
+            judge = repmat(patch', [clusterNum 1]) - Cluster;
             judge = sum(judge .^ 2, 2);
             [~, index] = min(judge);
-            C = coff(:, :, index);
-            % Get HR patch
+            % C = coff(:, :, index);
+            C = coff{index};
+            % Get LR patch
             HRPatch = C * [patch; 1];
+            % HRPatch = C * patch;
             HRPatch = reshape(HRPatch, [9 9]) + sum(sum(patch)) / (patchSize .^ 2 - 4);
+            % HRPatch = reshape(HRPatch, [9 9]);
             for c=0:8
                 for d=0:8
                     if c+3*(a-1)-2 > 0 && c+3*(a-1)-2 <= height && d+3*(b-1)-2 > 0 && d+3*(b-1)-2 <= width
@@ -59,6 +69,16 @@ for m=1:length(imgDir)
         end
     end
     large = large ./ times;
+    for a=1:height
+        for b=1:width
+            if large(a, b) < 0
+                large(a, b) = 0;
+            end
+            if large(a, b) > 255
+                large(a, b) = 255;
+            end
+        end
+    end
     if size(small, 3) == 3
         ret = bicubic(small, height, width);
         ret(:, :, 1) = large;
