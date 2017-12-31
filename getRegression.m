@@ -63,19 +63,12 @@ for m=1:clusterNum
     end
     % Calculate value of regression coefficient
     wantedLRFeature = [wantedLRFeature; ones(1, size(wantedLRFeature, 2))];
-    regre = cell(1, HRSize .^ 2);
     for b=1:HRSize .^ 2
         tmp = wantedHRFeature(b, :);
         tmp = wantedLRFeature' \ tmp';
-        regre{b} = tmp;
         coff(b, :, m) = tmp';
     end
-    % Save regression file
-    fid = fopen(fullfile('data/regression', sprintf('%d.mat', m)), 'w+');
-    fclose(fid);
-    save(fullfile('data/regression', sprintf('%d.mat', m)), 'regre');
 end
-size(coff)
 fid = fopen(fullfile('data', 'regression.mat'), 'w+');
 fclose(fid);
 save(fullfile('data', 'regression.mat'), 'coff');
