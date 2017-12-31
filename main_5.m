@@ -63,6 +63,8 @@ for m=1:length(imgDir)
         ret = bicubic(small, height, width);
         ret(:, :, 1) = large;
         ret = ycbcr2rgb(ret);
+    else
+        ret = uint8(large);
     end
     figure
     imshow(ret);
