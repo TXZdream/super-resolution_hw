@@ -15,6 +15,7 @@ for m=1:length(imgDir)
     img = img(:, :, 1);
 
     % Get low resolution image
+    blurImg = double(myfilter(img, window));
     [row col] = size(blurImg);
     row = row - mod(row, 3);
     col = col - mod(col, 3);
@@ -35,7 +36,7 @@ for m=1:length(imgDir)
             patch = patch([2:6 8:42 44:48]);
             pMean = sum(sum(patch)) / (patchsize .^ 2 - 4);
             features(:, index) = patch - pMean;
-            HRFeatures(:, index) = reshape(img(3*(a-1)-2:3*(a+1), 3*(b-1)-2:3*(b+1)), [9 ^ 2, 1]);
+            HRFeatures(:, index) = reshape(img(3*(a-1)-2:3*(a+1), 3*(b-1)-2:3*(b+1)), [9 ^ 2, 1]) - pMean;
             index = index + 1;
         end
     end

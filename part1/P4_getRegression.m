@@ -1,6 +1,6 @@
 % Predefined values
-clusterNum = 512;
-imgPath = 'data/position/';
+clusterNum = 1024;
+imgPath = 'data/feature/';
 imgDir = dir([imgPath '*.mat']);
 testNum = 20000;
 HRSize = 9;
