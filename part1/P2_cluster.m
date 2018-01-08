@@ -1,7 +1,7 @@
 clear
 % Predefined values
-clusterNum = 1024;
-times = 500;
+clusterNum = 512;
+times = 700;
 featureNum = 200000;
 % Read if data exists
 if ~exist(fullfile('data', 'feature.mat'), 'file')
@@ -28,12 +28,7 @@ else
 end
 
 % Kmeans
-tic
 [IDX, C] = kmeans(train, clusterNum, 'MaxIter', times, 'Display', 'iter');
-toc
-% Sort and save center data
-% [IDX, index] = sort(hist(IDX, clusterNum), 'descend');
-% C = C(index, :);
 fid = fopen(fullfile('data/', 'center.mat'), 'w+');
 fclose(fid);
 save(fullfile('data/', 'center.mat'), 'C');

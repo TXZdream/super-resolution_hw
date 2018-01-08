@@ -46,18 +46,14 @@ for m=1:length(imgDir)
             end
             patch = patch([2:6 8:42 44:48]);
             patch = reshape(patch, [patchSize .^ 2 - 4, 1]) - sum(sum(patch)) / (patchSize .^ 2 - 4);
-            % patch = reshape(patch, [patchSize .^ 2 - 4, 1]);
             % Judge which cluster
             judge = repmat(patch', [clusterNum 1]) - Cluster;
             judge = sum(judge .^ 2, 2);
             [~, index] = min(judge);
-            % C = coff(:, :, index);
-            C = coff{index};
-            % Get LR patch
+            C = coff(:, :, index);
+            % Get HR patch
             HRPatch = C * [patch; 1];
-            % HRPatch = C * patch;
             HRPatch = reshape(HRPatch, [9 9]) + sum(sum(patch)) / (patchSize .^ 2 - 4);
-            % HRPatch = reshape(HRPatch, [9 9]);
             for c=0:8
                 for d=0:8
                     if c+3*(a-1)-2 > 0 && c+3*(a-1)-2 <= height && d+3*(b-1)-2 > 0 && d+3*(b-1)-2 <= width

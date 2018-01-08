@@ -1,5 +1,5 @@
 % Predefined values
-clusterNum = 1024;
+clusterNum = 512;
 % Load center data
 center = load(fullfile('data', 'center.mat'), 'C');
 center = center.C;

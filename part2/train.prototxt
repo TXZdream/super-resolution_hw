@@ -1,0 +1,11 @@
+layer {
+    name: "conv1"
+    type: "Convolution"
+    bottom: "data"
+    top: "conv1"
+    convolution_param {
+        kernel_size: 3
+        num_output: 64
+        pad: 1
+    }
+}

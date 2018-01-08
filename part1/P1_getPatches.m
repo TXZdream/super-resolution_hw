@@ -6,6 +6,7 @@ patchsize = 7;
 imgPath = 'train/';
 imgDir = dir([imgPath '*.jpg']);
 window = gaussian(11, 1.7);
+window = window / sum(sum(window));
 
 for m=1:length(imgDir)
     fprintf('The %dth image\n', m);
@@ -14,7 +15,6 @@ for m=1:length(imgDir)
     img = img(:, :, 1);
 
     % Get low resolution image
-    blurImg = myfilter(img, window);
     [row col] = size(blurImg);
     row = row - mod(row, 3);
     col = col - mod(col, 3);
@@ -27,7 +27,7 @@ for m=1:length(imgDir)
     % Get image feature
     num = (row - patchsize + 1) * (col - patchsize + 1);
     features = zeros(patchsize .^ 2 - 4, num);
-    centers = zeros(2, num);
+    HRFeatures = zeros(9 ^ 2, num);
     index = 1;
     for a=ceil(patchsize/2):row-floor(patchsize/2)
         for b=ceil(patchsize/2):col-floor(patchsize/2)
@@ -35,22 +35,22 @@ for m=1:length(imgDir)
             patch = patch([2:6 8:42 44:48]);
             pMean = sum(sum(patch)) / (patchsize .^ 2 - 4);
             features(:, index) = patch - pMean;
-            centers(:, index) = [a; b];
+            HRFeatures(:, index) = reshape(img(3*(a-1)-2:3*(a+1), 3*(b-1)-2:3*(b+1)), [9 ^ 2, 1]);
             index = index + 1;
         end
     end
     % Save features
-    folder_position = fullfile(sprintf('%s/data/position/', pwd));
+    folder_hrfeatures = fullfile(sprintf('%s/data/hrfeatures/', pwd));
     folder_feature = fullfile(sprintf('%s/data/feature/', pwd));
     [filepath, name, ext] = fileparts(imgDir(m).name);
-    fn_position_full = fullfile(folder_position, sprintf('%s.mat', name));
+    hr_features = fullfile(folder_hrfeatures, sprintf('%s.mat', name));
     fn_feature_full = fullfile(folder_feature, sprintf('%s.mat', name));
 
-    fid = fopen(fn_position_full, 'w');
+    fid = fopen(hr_features, 'w');
     fclose(fid);
     fid = fopen(fn_feature_full, 'w');
     fclose(fid);
 
-    save(fn_position_full, 'centers');
+    save(hr_features, 'HRFeatures');
     save(fn_feature_full, 'features');
 end
