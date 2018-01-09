@@ -1,22 +1,20 @@
-P1_getPatches
-P2_cluster
-P3_nearest
-P4_getRegression
+% P1_getPatches
+% P2_cluster
+% P3_nearest
+% P4_getRegression
 patchSize = 7;
 imgPath = 'image/';
 imgDir = dir([imgPath '*.bmp']);
+window = gaussian(11, 1.7);
+window = window / sum(sum(window));
 % clusterNum = 512;
 clusterNum = 1024;
 % Load regression coff
 coff = load(fullfile('data', 'regression.mat'), 'coff');
 coff = coff.coff;
-% coff = load(fullfile('data', 'coef_matirxs14.mat'), 'coef_matirxs');
-% coff = coff.coef_matirxs;
 % Load cluster center
 Cluster = load(fullfile('data', 'center.mat'), 'C');
 Cluster = Cluster.C;
-% Cluster = load(fullfile('data', 'c.mat'), 'C');
-% Cluster = Cluster.C;
 % Handle all image
 for m=1:length(imgDir)
     img = imread([imgPath imgDir(m).name]);
@@ -24,6 +22,7 @@ for m=1:length(imgDir)
     [height width tmp] = size(img);
 
     % Minisize to 1/3
+    img = double(myfilter(img, window));
     small = bicubic(img, floor(height / 3), floor(width / 3));
     % RGB to YCbCr
     if size(small, 3) == 3
