@@ -16,8 +16,12 @@ coff = coff.coff;
 Cluster = load(fullfile('data', 'center.mat'), 'C');
 Cluster = Cluster.C;
 % Handle all image
+ssimArr = [];
+psnrArr = [];
 for m=1:length(imgDir)
+% for m=1:1
     img = imread([imgPath imgDir(m).name]);
+    raw = img;
     imgDir(m).name
     [height width tmp] = size(img);
 
@@ -32,15 +36,17 @@ for m=1:length(imgDir)
     large = zeros(height, width);
     times = zeros(height, width);
     ret = zeros(height, width, 3);
+    % Extend small image
+    paddingSmally = wextend('2d', 'sym', smally, 3);
     % Get HR patch
     for a=1:floor(height / 3)
         for b=1:floor(width / 3)
             patch = zeros(patchSize, patchSize);
             for c=-3:3
                 for d=-3:3
-                    if a + c > 0 && a + c <= floor(height / 3) && b + d > 0 && b + d <= floor(width / 3)
-                        patch(c + 4, d + 4) = smally(a + c, b + d);
-                    end
+                    % if a + c > 0 && a + c <= floor(height / 3) && b + d > 0 && b + d <= floor(width / 3)
+                        patch(c + 4, d + 4) = paddingSmally(a + c + 3, b + d + 3);
+                    % end
                 end
             end
             patch = patch([2:6 8:42 44:48]);
@@ -82,6 +88,16 @@ for m=1:length(imgDir)
     else
         ret = uint8(large);
     end
-    figure
-    imshow(ret);
+    imwrite(ret, strcat('target/large2/', imgDir(m).name));
+    % Display PSNR and SSIM
+    [row col dim] = size(ret);
+    raw = raw(1:row, 1:col, 1:dim);
+    % PSNR(raw, ret)
+    psnrArr = [psnrArr psnr(raw, ret)];
+    % SSIM(raw, ret)
+    ssimArr = [ssimArr ssim2(raw, ret)];
 end
+psnrArr
+ssimArr
+mean(psnrArr)
+mean(ssimArr)

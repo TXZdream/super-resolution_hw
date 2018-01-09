@@ -1,6 +1,8 @@
 imgPath = 'image/';
 imgDir = dir([imgPath '*.bmp']);
 % Get all of the image
+ssimArr = [];
+psnrArr = [];
 for m=1:length(imgDir)
     img = imread([imgPath imgDir(m).name]);
     imgDir(m).name
@@ -15,7 +17,10 @@ for m=1:length(imgDir)
     imwrite(large, strcat('target/large/', imgDir(m).name));
 
     % Get PSNR value
-    PSNR(img, large)
-    SSIM(img, large)
-    % ssim2(img, large) * 100
+    psnrArr = [psnrArr psnr(img, large)];
+    ssimArr = [ssimArr ssim2(img, large)];
 end
+psnrArr
+ssimArr
+mean(psnrArr)
+mean(ssimArr)

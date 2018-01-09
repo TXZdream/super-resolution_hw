@@ -19,11 +19,11 @@ function output = SSIM(inputImg1, inputImg2)
     window = gaussian(11, 1.5);
     window = window / sum(sum(window));
     % Filter with gaussian to get required value
-    miux = myfilter(inputImg1, window);
-    miuy = myfilter(inputImg2, window);
-    sigmax = myfilter(inputImg1 .^ 2, window) - miux .^ 2;
-    sigmay = myfilter(inputImg2 .^ 2, window) - miuy .^ 2;
-    sigmaxy = myfilter(inputImg2 .* inputImg1, window) - miux .* miuy;
+    miux = double(myfilter(inputImg1, window));
+    miuy = double(myfilter(inputImg2, window));
+    sigmax = double(myfilter(inputImg1 .^ 2, window)) - miux .^ 2;
+    sigmay = double(myfilter(inputImg2 .^ 2, window)) - miuy .^ 2;
+    sigmaxy = double(myfilter(inputImg2 .* inputImg1, window)) - miux .* miuy;
     % miux = filter2(window, inputImg1, 'valid');
     % miuy = filter2(window, inputImg2, 'valid');
     % sigmax = filter2(window, inputImg1 .^ 2, 'valid') - miux .^ 2;
@@ -32,7 +32,7 @@ function output = SSIM(inputImg1, inputImg2)
     % Get ssim
     ssim = ((2 * (miux .* miuy) + C1) .* (2 * sigmaxy + C2))...
         ./ ((miux .^ 2 + miuy .^ 2 + C1) .* (sigmax + sigmay + C2));
-    ssim = ((2*miux .* miuy + C1).*(2*sigmaxy + C2))./((miux .^ 2 + miuy .^ 2 + C1).*(sigmax + sigmay + C2));
+    % ssim = ((2*miux .* miuy + C1).*(2*sigmaxy + C2))./((miux .^ 2 + miuy .^ 2 + C1).*(sigmax + sigmay + C2));
     % output = sum(sum(ssim)) / (row * col);
     output = mean2(ssim);
 end
